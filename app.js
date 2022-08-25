@@ -11,6 +11,15 @@ app.set('views', path.join(__dirname, 'views'))
 
 // GLOBAL MIDDLEWARES ----------------------------------------------------------------------------
 
+// Implement CORS
+app.use(cors())
+app.options('*', cors())
+// Access-control-Allow-Origin
+// api.natours.com , front-end natours.com
+// app.use(cors({
+//   origin: 'https://www.natours.com'
+// }))
+
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')))
 
