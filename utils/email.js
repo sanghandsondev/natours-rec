@@ -14,11 +14,6 @@ module.exports = class Email {
         if (process.env.NODE_ENV === 'production') {        // real - Google mail 
             return nodemailer.createTransport({
                 service: 'gmail',
-                port: 25,
-                secure: false, // true for 465, false for other ports
-                secureConnection: false,
-                logger: true,
-                debug: true,
                 auth: {
                     user: process.env.GMAIL_USERNAME,
                     pass: process.env.GMAIL_PASSWORD
