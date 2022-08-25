@@ -12,6 +12,7 @@ app.set('views', path.join(__dirname, 'views'))
 // GLOBAL MIDDLEWARES ----------------------------------------------------------------------------
 
 // Implement CORS
+const cors = require('cors')
 app.use(cors())
 app.options('*', cors())
 // Access-control-Allow-Origin
