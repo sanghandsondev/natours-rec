@@ -3,6 +3,8 @@ const path = require('path')
 
 const app = express()
 
+app.enable('trust proxy')
+
 // SET VIEW ENGINE  --------------------------------------------------------------------------------
 app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, 'views'))
@@ -60,7 +62,7 @@ app.use(hpp({
   ]
 }))
 
-// nén file JS khi run build:js
+// nén file khi build
 const compression = require('compression')
 app.use(compression())
 

@@ -38,6 +38,13 @@ process.on('unhandledRejection', (err) => {
         process.exit(1)
     })
 })
+// sigterm signal  => heroku sau 24h ...
+process.on('SIGTERM', () => {
+    console.log('SIGTERM RECEIVED. Shutting down gracefully')
+    server.close(() => {
+        console.log('Process terminated')
+    })
+})
 
 
 
