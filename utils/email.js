@@ -15,7 +15,7 @@ module.exports = class Email {
             return nodemailer.createTransport({
                 service: 'gmail',
                 port: 587,
-                secure: true, // true for 465, false for other ports
+                secure: false, // true for 465, false for other ports
                 auth: {
                     user: process.env.GMAIL_USERNAME,
                     pass: process.env.GMAIL_PASSWORD
