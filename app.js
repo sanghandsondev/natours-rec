@@ -60,6 +60,10 @@ app.use(hpp({
   ]
 }))
 
+// nén file JS khi run build:js
+const compression = require('compression')
+app.use(compression())
+
 // Test custom middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString()

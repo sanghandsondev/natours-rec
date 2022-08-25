@@ -32,7 +32,7 @@ const server = app.listen(port, () => {
 // catch lỗi kết nối database
 // Error outside Express (ko phải lỗi server)
 process.on('unhandledRejection', (err) => {
-    console.log(err)
+    // console.log(err)
     console.log('UNHANDLER REJECTION!! Shutting down...')
     server.close(() => {
         process.exit(1)
