@@ -11,16 +11,16 @@ module.exports = class Email {
     }
     // Method
     newTransport() {
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === 'production') {        // real - Google mail 
             return nodemailer.createTransport({
-                service: 'SendGrid',
+                service: 'gmail',
                 auth: {
-                    user: process.env.SENDGRID_USERNAME,
-                    pass: process.env.SENDGRID_PASSWORD
+                    user: process.env.GMAIL_USERNAME,
+                    pass: process.env.GMAIL_PASSWORD
                 }
             })
         }
-        return nodemailer.createTransport({
+        return nodemailer.createTransport({         // Mailtrap - Safe Email Testing
             host: process.env.EMAIL_HOST,
             port: process.env.EMAIL_PORT,
             auth: {
@@ -41,9 +41,9 @@ module.exports = class Email {
             from: this.from,
             to: this.to,
             subject,
-            html,
-            text: htmlToText.fromString(html)
-            // html
+            html,     // html body
+            text: htmlToText.fromString(html)       // plain text body
+
         }
         // 3) Create a transport and send email
         await this.newTransport().sendMail(mailOptions)

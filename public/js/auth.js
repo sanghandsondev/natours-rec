@@ -1,15 +1,12 @@
 import axios from 'axios'
 import { showAlert } from './alerts'
 
-export const login = async (email, password) => {
+export const login = async (data) => {
     try {
         const res = await axios({
             method: 'POST',
             url: '/api/v1/users/login',
-            data: {
-                email,
-                password
-            }
+            data
         })
         if (res.data.status === 'success') {
             location.assign('/')
@@ -18,6 +15,25 @@ export const login = async (email, password) => {
         showAlert('error', err.response.data.message)
     }
 }
+
+export const signup = async (data) => {
+    try {
+        const res = await axios({
+            method: 'POST',
+            url: '/api/v1/users/signup',
+            data
+        })
+        if (res.data.status === 'success') {
+            showAlert('success', 'Create new account successfully')
+            window.setTimeout(() => {
+                location.assign('/')
+            }, 1000)
+        }
+    } catch (err) {
+        showAlert('error', err.response.data.message)
+    }
+}
+
 
 export const logout = async () => {
     try {
@@ -35,3 +51,4 @@ export const logout = async () => {
         }, 2000)
     }
 }
+
