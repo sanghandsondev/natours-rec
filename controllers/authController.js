@@ -145,7 +145,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await user.save({ validateBeforeSave: false })             // bỏ qua validate với SAVE, lưu thời gian gửi token 
     // 3) Send it to user's email
     try {
-        const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`
+        // const url = `${req.protocol}://${req.get('host')}/me`;
+        const resetURL = `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`
         await new Email(user, resetURL).sendPasswordReset()
 
         res.status(200).json({

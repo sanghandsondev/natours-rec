@@ -1,5 +1,5 @@
 import '@babel/polyfill'
-import { login, logout, signup } from './auth'
+import { login, logout, signup, forgotPassword, resetPassword } from './auth'
 import { updateData } from './account'
 
 
@@ -9,6 +9,8 @@ const signupForm = document.querySelector('.form--signup')
 const logOutBtn = document.querySelector('.nav__el--logout')
 const updateDataForm = document.querySelector('.form-user-data')
 const updatePasswordForm = document.querySelector('.form-user-password')
+const forgotPasswordForm = document.querySelector('.form-forgot-password')
+const resetPasswordForm = document.querySelector('.form-reset-password')
 
 // DELEGATION
 if (loginForm) {
@@ -34,7 +36,7 @@ if (signupForm) {
 if (logOutBtn) logOutBtn.addEventListener('click', logout)
 
 if (updateDataForm) {
-    updateDataForm.addEventListener('submit', async e => {
+    updateDataForm.addEventListener('submit', e => {
         e.preventDefault()
         const form = new FormData()         // 1 object req.body từ input của form
         form.append('name', document.getElementById('name').value)
@@ -63,6 +65,28 @@ if (updatePasswordForm) {
         document.getElementById('password-current').value = ''
         document.getElementById('password').value = ''
         document.getElementById('password-confirm').value = ''
+    })
+}
+
+if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', async e => {
+        e.preventDefault()
+        document.querySelector('.btn-forgot-password').textContent = 'Sending...'
+        const email = document.getElementById('email').value
+        await forgotPassword(email)
+
+        document.querySelector('.btn-forgot-password').textContent = 'Send'
+        document.getElementById('email').value = ''
+    })
+}
+
+if (resetPasswordForm) {
+    resetPasswordForm.addEventListener('submit', e => {
+        const resetToken = document.querySelector('h3').innerText
+        e.preventDefault()
+        const password = document.getElementById('password').value
+        const passwordConfirm = document.getElementById('passwordConfirm').value
+        resetPassword({ password, passwordConfirm }, resetToken)
     })
 }
 

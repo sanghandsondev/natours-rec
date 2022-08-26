@@ -42,11 +42,23 @@ exports.getLoginForm = (req, res) => {
         title: 'Log into your account'
     })
 }
-
 exports.getSignupForm = (req, res) => {
     if (res.locals.user) res.redirect('/')        // nếu đang đăng nhập rồi thì ko thể truy cập /signup
     res.status(200).render('signup', {
         title: 'Sign up new account'
+    })
+}
+exports.getForgotPasswordForm = (req, res) => {
+    if (res.locals.user) res.redirect('/')
+    res.status(200).render('forgotPassword', {
+        title: 'Forgot your password'
+    })
+}
+exports.getResetPasswordForm = (req, res) => {
+    if (res.locals.user) res.redirect('/')
+    res.status(200).render('resetPassword', {
+        title: 'Reset your password',
+        resetToken: req.params.resetToken
     })
 }
 

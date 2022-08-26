@@ -18,7 +18,6 @@ module.exports = class Email {
                     user: process.env.GMAIL_USERNAME,
                     pass: process.env.GMAIL_PASSWORD
                 },
-                ignoreTLS: true
             })
         }
         return nodemailer.createTransport({         // Mailtrap - Safe Email Testing
