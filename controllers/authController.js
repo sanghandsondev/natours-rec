@@ -103,8 +103,8 @@ exports.loginWithGoogle = catchAsync(async (req, res, next) => {
         email: userData.data.email,
         password: '123456789',
         passwordConfirm: '123456789',
-        // photo: userData.data.pictrue,
         serviceProvider: 'google',
+        // photo: userData.data.pictrue,
     }
     // console.log(userData.data)
     const user = await User.findOne({ email: body.email })

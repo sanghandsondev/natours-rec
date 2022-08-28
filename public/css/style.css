@@ -232,8 +232,17 @@ body {
   color: #fff;
 }
 
+.btn--blue {
+  background-color: rgb(54, 54, 195);
+  color: #fff;
+}
+
 .btn--green::after {
   background-color: #55c57a;
+}
+
+.btn--blue::after {
+  background-color: rgb(54, 54, 195);
 }
 
 .btn--small {
@@ -1408,9 +1417,36 @@ body {
   margin-left: 5px;
   text-decoration: none;
   font-size: 1.25rem;
-  color: #666;
+  color: #333;
 }
 
 .forgot-mt {
   margin-top: 10px;
+}
+
+.btn--login {
+  width: 100%;
+}
+
+.login-gg-fb {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 14px;
+}
+
+.btn-login-gg {
+  background-color: red;
+}
+
+.login-with-gg {
+  text-decoration: none;
+  font-size: 1.1rem;
+  color: white;
+
+}
+
+.login-with-fb {
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: white;
 }

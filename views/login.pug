@@ -15,7 +15,11 @@ block content
                     label.form__label(for='password') Password
                     input#password.form__input(type='password', placeholder='••••••••', required, minlength='6')
                 .form__group
-                    button.btn.btn--green Login
+                    button.btn.btn--green.btn--login Login
             h3.forgot-mt You forgot the password?
                 a.forgot-password(href='/forgotPassword') Click here
-            a(href= `${ggUrl}`) Login with Google
+            .login-gg-fb
+                button.btn.btn--white.btn-login-gg
+                    a.login-with-gg(href= `${ggUrl}`) Login with Google
+                button.btn.btn--blue.btn-login-fb
+                    a.login-with-fb(href= `#`) Continue with Facebook
