@@ -35,7 +35,7 @@ block content
                             input#name.form__input(type='text', value=`${user.name}`, required, name='name')
                         .form__group.ma-bt-md
                             label.form__label(for='email') Email address
-                            input#email.form__input(type='email', value=`${user.email}`, required, name='email')
+                            input#email.form__input(type='email', value=`${user.email}`, disabled, name='email')
                         .form__group.form__photo-upload
                             img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
                             input#photo.form__upload(type='file',accept='image/*',name='photo')
