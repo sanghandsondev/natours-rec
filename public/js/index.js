@@ -89,4 +89,3 @@ if (resetPasswordForm) {
         resetPassword({ password, passwordConfirm }, resetToken)
     })
 }
-

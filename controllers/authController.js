@@ -5,6 +5,7 @@ const Email = require('../utils/email')
 const jwt = require('jsonwebtoken')
 const { promisify } = require('util')    // Thư viện chức năng tích hợp sẵn trong node ( như 'fs' ) => promisify: function -> promise
 const crypto = require('crypto')        // có sẵn trong node
+const axios = require('axios')
 
 const signToken = idUser => {
     return jwt.sign({ id: idUser }, process.env.JWT_SECRET, {
@@ -14,12 +15,6 @@ const signToken = idUser => {
 
 const createSendToken = (user, statusCode, req, res) => {
     const token = signToken(user._id)
-    // const cookieOptions = {
-    //     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
-    //     httpOnly: true,
-    //     secure: req.secure || req.headers('x-forwarded-proto') === 'https'
-    // }
-
 
     res.cookie('jwt', token, {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
@@ -38,6 +33,7 @@ const createSendToken = (user, statusCode, req, res) => {
         }
     })
 }
+
 
 // ĐĂNG KÝ
 exports.signUp = catchAsync(async (req, res, next) => {
@@ -63,6 +59,75 @@ exports.logIn = catchAsync(async (req, res, next) => {
 
     // 3) If everything ok, send token to client
     createSendToken(user, 200, req, res)
+})
+
+// ĐĂNH NHẬP VỚI GOOGLE
+exports.loginWithGoogle = catchAsync(async (req, res, next) => {
+    const { code } = req.query;
+    const redirect_uri = `${req.protocol}://${req.get('host')}/api/sessions/oauth/google`
+    const client_id = (process.env.NODE_ENV === 'production') ? process.env.GOOGLE_CLIENT_ID : process.env.GOOGLE_CLIENT_ID_DEV
+    const client_secret = (process.env.NODE_ENV === 'production') ? process.env.GOOGLE_CLIENT_SECRET : process.env.GOOGLE_CLIENT_SECRET_DEV
+    const grant_type = 'authorization_code'
+    const url = 'https://oauth2.googleapis.com/token'
+    const data = await axios({       // id_token vs acess_token
+        method: 'POST',
+        url,
+        params: {
+            client_id,
+            client_secret,
+            redirect_uri,
+            code,
+            grant_type
+        }
+    })
+    if (!data) {
+        return next(new AppError('Failed to get token from Google Api', 404))
+    }
+    const tokenFromGoogle = data.data.access_token
+    const urlForGettingUserInfo = 'https://www.googleapis.com/oauth2/v2/userinfo'
+    const userData = await axios({
+        url: urlForGettingUserInfo,
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${tokenFromGoogle}`,
+        },
+    })
+    if (!userData) {
+        return next(new AppError('Failed to get User Info from Google Api', 404))
+    }
+    if (userData.data.verified_email === 'false') {
+        return next(new AppError('Google account is not verified ', 403))
+    }
+    const body = {
+        name: userData.data.name,
+        email: userData.data.email,
+        password: '123456789',
+        passwordConfirm: '123456789',
+        // photo: userData.data.pictrue,
+        serviceProvider: 'google',
+    }
+    // console.log(userData.data)
+    const user = await User.findOne({ email: body.email })
+    if (!user) {
+        const newUser = await User.create(body)
+        await new Email(newUser, `${req.protocol}://${req.get('host')}/me`).sendWelcome()
+        const token = signToken(newUser._id)
+        res.cookie('jwt', token, {
+            expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
+            httpOnly: true,
+            secure: req.secure || req.header('x-forwarded-proto') === 'https'
+        })   // Send JWT via Cookie
+        res.status(201).redirect('/')
+    }
+    // if user has been in database
+    const token = signToken(user._id)
+    await new Email(user, `${req.protocol}://${req.get('host')}/`).sendLoginWithGoogle()
+    res.cookie('jwt', token, {
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
+        httpOnly: true,
+        secure: req.secure || req.header('x-forwarded-proto') === 'https'
+    })   // Send JWT via Cookie
+    res.status(200).redirect('/')
 })
 
 // ĐĂNG XUẤT
