@@ -2,6 +2,7 @@ const Tour = require('../models/tourModel')
 const AppError = require('../utils/appError')
 const catchAsync = require('../utils/catchAsync')
 const getGoogleURL = require('../utils/getGoogleURL')
+const getFacebookURL = require('../utils/getFacebookURL')
 
 
 exports.getOverview = catchAsync(async (req, res) => {
@@ -40,9 +41,11 @@ exports.getTour = catchAsync(async (req, res, next) => {
 exports.getLoginForm = (req, res) => {
     if (res.locals.user) res.redirect('/')        // nếu đang đăng nhập rồi thì ko thể truy cập /login
     const ggUrl = getGoogleURL()
+    const fbUrl = getFacebookURL()
     res.status(200).render('login', {
         title: 'Log into your account',
-        ggUrl
+        ggUrl,
+        fbUrl
     })
 }
 exports.getSignupForm = (req, res) => {
