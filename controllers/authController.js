@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const { promisify } = require('util')    // Thư viện chức năng tích hợp sẵn trong node ( như 'fs' ) => promisify: function -> promise
 const crypto = require('crypto')        // có sẵn trong node
 const axios = require('axios')
+const singleImage = require('../utils/ImageFromUrl')
 
 const signToken = idUser => {
     return jwt.sign({ id: idUser }, process.env.JWT_SECRET, {
@@ -98,17 +99,21 @@ exports.loginWithGoogle = catchAsync(async (req, res, next) => {
     if (userData.data.verified_email === 'false') {
         return next(new AppError('Google account is not verified ', 403))
     }
+
     const body = {
         name: userData.data.name,
         email: userData.data.email,
-        password: '123456789',
-        passwordConfirm: '123456789',
         serviceProvider: 'google',
         // photo: userData.data.pictrue,
     }
-    // console.log(userData.data)
+    //
     const user = await User.findOne({ email: body.email })
     if (!user) {
+        const imageFrofile = await singleImage(userData.data.picture, userData.data.email.split('@')[0], 'public/img/users')
+        // console.log(imageFrofile.path.split('.')[1])
+        body.photo = `${userData.data.email.split('@')[0]}.${imageFrofile.path.split('.')[1]}`
+        body.password = '123456789'
+        body.passwordConfirm = '123456789'
         const newUser = await User.create(body)
         // await new Email(newUser, `${req.protocol}://${req.get('host')}/me`).sendWelcome()
         const token = signToken(newUser._id)
