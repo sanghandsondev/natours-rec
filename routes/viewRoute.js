@@ -15,6 +15,7 @@ router.get('/resetPassword/:resetToken', authController.isLoggedIn, viewControll
 router.get('/me', authController.protect, viewController.getAccount)
 
 router.get('/api/sessions/oauth/google', authController.loginWithGoogle)
+router.get('/oauth/facebook', authController.loginWithFacebook)
 
 
 module.exports = router

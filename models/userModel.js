@@ -8,6 +8,7 @@ const userSchema = new moongose.Schema({
         type: String,
         required: [true, 'Please tell us your name!'],
     },
+    facebookId: String,
     email: {
         type: String,
         required: [true, 'Please provide your email'],

@@ -110,7 +110,7 @@ exports.loginWithGoogle = catchAsync(async (req, res, next) => {
     const user = await User.findOne({ email: body.email })
     if (!user) {
         const newUser = await User.create(body)
-        await new Email(newUser, `${req.protocol}://${req.get('host')}/me`).sendWelcome()
+        // await new Email(newUser, `${req.protocol}://${req.get('host')}/me`).sendWelcome()
         const token = signToken(newUser._id)
         res.cookie('jwt', token, {
             expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
@@ -121,7 +121,7 @@ exports.loginWithGoogle = catchAsync(async (req, res, next) => {
     }
     // if user has been in database
     const token = signToken(user._id)
-    await new Email(user, `${req.protocol}://${req.get('host')}/`).sendLoginWithGoogle()
+    // await new Email(user, `${req.protocol}://${req.get('host')}/`).sendLoginWithGoogle()
     res.cookie('jwt', token, {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
         httpOnly: true,
@@ -130,6 +130,62 @@ exports.loginWithGoogle = catchAsync(async (req, res, next) => {
     res.status(200).redirect('/')
 })
 
+// ĐĂNG NHẬP VỚI FACEBOOK
+exports.loginWithFacebook = catchAsync(async (req, res, next) => {
+    const { code } = req.query;
+    // console.log(code)
+    const redirect_uri = `${req.protocol}://${req.get('host')}/oauth/facebook`
+    const client_id = process.env.FACEBOOK_CLIENT_ID
+    const client_secret = process.env.FACEBOOK_CLIENT_SECRET
+    const data = await axios({
+        method: 'GET',
+        url: `https://graph.facebook.com/v14.0/oauth/access_token?client_id=${client_id}&redirect_uri=${redirect_uri}&client_secret=${client_secret}&code=${code}`,
+    })
+    // console.log(data.data)
+    if (!data) {
+        return next(new AppError('Failed to get token from Facebook Api', 404))
+    }
+    const tokenFromFacebook = data.data.access_token
+    // console.log('Hello', tokenFromFacebook)
+    const urlForGettingUserInfo = 'https://graph.facebook.com/v14.0/me?fields=name,email'
+    const userData = await axios({
+        url: urlForGettingUserInfo,
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${tokenFromFacebook}`,
+        },
+    })
+    // console.log(userData.data)
+    if (!userData) {
+        return next(new AppError('Failed to get User Info from Facebook Api', 404))
+    }
+    const body = {
+        facebookId: userData.data.id,
+        name: userData.data.name,
+        email: `${Date.now()}@example.com`,
+        password: '123456789',
+        passwordConfirm: '123456789',
+    }
+    const user = await User.findOne({ facebookId: body.facebookId })
+    if (!user) {
+        const newUser = await User.create(body)
+        const token = signToken(newUser._id)
+        res.cookie('jwt', token, {
+            expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
+            httpOnly: true,
+            secure: req.secure || req.header('x-forwarded-proto') === 'https'
+        })   // Send JWT via Cookie
+        res.status(201).redirect('/')
+    }
+    // if user has been in database
+    const token = signToken(user._id)
+    res.cookie('jwt', token, {
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),   // milliseconds
+        httpOnly: true,
+        secure: req.secure || req.header('x-forwarded-proto') === 'https'
+    })   // Send JWT via Cookie
+    res.status(200).redirect('/')
+})
 // ĐĂNG XUẤT
 exports.logOut = (req, res) => {
     res.cookie('jwt', 'loggedout', {
