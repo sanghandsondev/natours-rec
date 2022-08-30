@@ -152,7 +152,7 @@ exports.loginWithFacebook = catchAsync(async (req, res, next) => {
     }
     const tokenFromFacebook = data.data.access_token
     // console.log('Hello', tokenFromFacebook)
-    const urlForGettingUserInfo = 'https://graph.facebook.com/v14.0/me?fields=name,email'
+    const urlForGettingUserInfo = 'https://graph.facebook.com/v14.0/me?fields=name,email,picture'
     const userData = await axios({
         url: urlForGettingUserInfo,
         method: 'GET',
@@ -160,19 +160,23 @@ exports.loginWithFacebook = catchAsync(async (req, res, next) => {
             Authorization: `Bearer ${tokenFromFacebook}`,
         },
     })
-    // console.log(userData.data)
+
     if (!userData) {
         return next(new AppError('Failed to get User Info from Facebook Api', 404))
     }
     const body = {
         facebookId: userData.data.id,
         name: userData.data.name,
-        email: `${Date.now()}@example.com`,
-        password: '123456789',
-        passwordConfirm: '123456789',
+
     }
     const user = await User.findOne({ facebookId: body.facebookId })
     if (!user) {
+        const imageFrofile = await singleImage(userData.data.picture.data.url, userData.data.id, 'public/img/users')
+        // console.log(imageFrofile.path.split('.')[1])
+        body.photo = `${userData.data.id}.${imageFrofile.path.split('.')[1]}`
+        body.email = `${Date.now()}@example.com`
+        body.password = '123456789'
+        body.passwordConfirm = '123456789'
         const newUser = await User.create(body)
         const token = signToken(newUser._id)
         res.cookie('jwt', token, {
