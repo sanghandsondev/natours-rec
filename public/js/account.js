@@ -18,3 +18,14 @@ export const updateData = async (data, type) => {
         showAlert('error', err.response.data.message)
     }
 }
+
+export const readImg = (input, imgSrc) => {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            document.querySelector(imgSrc).src = e.target.result
+        }
+        reader.readAsDataURL(input.files[0])
+    }
+}
+

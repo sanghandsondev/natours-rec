@@ -1,6 +1,6 @@
 import '@babel/polyfill'
 import { login, logout, signup, forgotPassword, resetPassword } from './auth'
-import { updateData } from './account'
+import { updateData, readImg } from './account'
 
 
 // DOM ELEMENTS
@@ -8,6 +8,7 @@ const loginForm = document.querySelector('.form--login')
 const signupForm = document.querySelector('.form--signup')
 const logOutBtn = document.querySelector('.nav__el--logout')
 const updateDataForm = document.querySelector('.form-user-data')
+const updateAvaUser = document.querySelector('.form__upload')
 const updatePasswordForm = document.querySelector('.form-user-password')
 const forgotPasswordForm = document.querySelector('.form-forgot-password')
 const resetPasswordForm = document.querySelector('.form-reset-password')
@@ -48,6 +49,12 @@ if (updateDataForm) {
         // const name = document.getElementById('name').value
         // const email = document.getElementById('email').value
         // updateData({ name, email }, 'data')
+    })
+}
+
+if (updateAvaUser) {
+    updateAvaUser.addEventListener('change', e => {
+        readImg(updateAvaUser, '.form__user-photo')
     })
 }
 
