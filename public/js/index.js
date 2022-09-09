@@ -45,10 +45,6 @@ if (updateDataForm) {
         form.append('photo', document.getElementById('photo').files[0])
 
         updateData(form, 'data')
-
-        // const name = document.getElementById('name').value
-        // const email = document.getElementById('email').value
-        // updateData({ name, email }, 'data')
     })
 }
 
